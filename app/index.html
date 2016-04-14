@@ -56,22 +56,8 @@
     </md-toolbar>
 
     <md-content flex id="content" ng-controller="ConexionController as cc">
-        <md-icon md-svg-icon="{{ul.selected.avatar}}" class="avatar"></md-icon>
-        <h2>{{ul.selected.name}}</h2>
-        <p>{{ul.selected.content}}</p>
-
-        <md-button class="contact" md-no-ink ng-click="ul.makeContact(ul.selected)" aria-label="Share with {{ ul.selected.name }}">
-          <md-tooltip>Contact {{ ul.selected.name }}</md-tooltip>
-          <md-icon md-svg-icon="share"></md-icon>
-        </md-button>
-       
-        
-        <div id="postsDiv" ng-repeat="post in posts">
-          {{post.Nombre}}
-          {{post.Precio}}
-        </div>
-      
-      </md-content>
+      <div ng-view></div>  
+    </md-content>
 
   </div>
 
