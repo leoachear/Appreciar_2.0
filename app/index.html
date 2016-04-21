@@ -84,6 +84,7 @@
                       .defaultIconSet("./assets/svg/avatars.svg", 128)
                       .icon("menu"       , "./assets/svg/menu.svg"        , 24)
                       .icon("share"      , "./assets/svg/share.svg"       , 24)
+                      .icon("add"        , "./assets/svg/add_black_36px.svg" , 36)  
                       .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
                       .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
                       .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
@@ -98,6 +99,10 @@
                       controller: 'ConexionController',
                       templateUrl: './src/views/home.html'
                     })
+                    .when('/postear',{
+                      controller: 'PostearController',
+                      templateUrl: './src/views/postear.html'
+                    })
                     .otherwise({
                       redirectTo: '/'
                     });
@@ -105,54 +110,82 @@
               })
               .service('FireService',['$firebaseArray',function($firebaseArray){
 
+                this.myDataRef = new Firebase('https://appreciar.firebaseio.com/');
+
                 this.getAll = function(accion){
-                  this.myDataRef = new Firebase('https://appreciar.firebaseio.com/');
                   this.accionRef = this.myDataRef.child(accion);
+                  var query = this.accionRef.orderByKey().limitToLast(10);
                   this.datos = [];
 
-                  this.datos = $firebaseArray(this.accionRef);
+                  this.datos = $firebaseArray(query);
 
                   return this.datos;  
+                };
+
+                this.addPost = function(postObj) {
+                  this.postsRef = this.myDataRef.child('Posts');
+
+                  var post = $firebaseArray(this.postsRef);
+                  post.$add(postObj);
+                };
+
+                this.addZona = function(zonaObj,id) {
+                  this.zonaRef = this.myDataRef.child('PostsZonas');
+                  this.zonaIdRef = this.zonaRef.child(id);
+
+                  var zonas = $firebaseArray(this.zonaIdRef);
+                  zonas.$add(zonaObj);
                 }
 
               }])
               .controller('ConexionController', ['$rootScope','$scope','FireService',function($rootScope,$scope,FireService) {
-                /*var myDataRef = new Firebase('https://appreciar.firebaseio.com/');
-                var postsRef = myDataRef.child("Posts");
-                $scope.posts = [];
-
-                postsRef.on('child_added', function(snapshot) {
-                  var objmessage = snapshot.val();
-                  //$('<div/>').attr('id',snapshot.key()).text('Nombre: ' + objmessage.Nombre + ' Precio: ' + objmessage.Precio).appendTo($('#postsDiv'));
-                  console.log(objmessage);
-                  $scope.$apply(function() {
-                    $scope.posts.push(objmessage);  
-                  });
-                  
-                })*/
 
                 $rootScope.posts = [];
 
                 $scope.TraerDatos = function(dato) {
-                  console.log(dato);
-                  $rootScope.posts = FireService.getAll(dato);  
-                  //console.log($rootScope.posts);
-                  //$scope.posteos = $rootScope.posts;
+                  $rootScope.posts = FireService.getAll(dato);
                 } 
 
+              }])
+              .controller('PostearController',['$scope','FireService', function($scope,FireService){ 
+
+                console.log('Blanquea afuera');
+                $scope.nombre_producto = "";
+                $scope.precio_producto = "";
+                $scope.nombre_zona = "";
+
+                var blanquear = function() {
+                  console.log('Entra en la funcion blanquear');
+                  $scope.nombre_producto = "";
+                  $scope.precio_producto = "";
+                  $scope.nombre_zona = "";
+                }
+
+                $scope.agregarPost = function() {
+                  var postObj=
+                    {
+                      Nombre: $scope.nombre_producto,
+                      Precio: $scope.precio_producto,
+                      Zona: $scope.nombre_zona
+                    };
+
+                  if ($scope.nombre_zona != null && $scope.nombre_zona != ''){
+                    console.log('Entra al IF');
+                    FireService.addZona(postObj,$scope.nombre_zona);
+                  }
+
+                  FireService.addPost(postObj);
+
+                  blanquear();
+
+                };
+
+                $scope.loadZona = function() {
+
+                  $scope.nombre_zonas =  FireService.getAll('Zonas');
+                };
+
               }]);
-
-/* 
-var myDataRef = new Firebase('https://appreciar.firebaseio.com/Posts');
-$scope.datosBase = [];
-
-myDataRef.on("child_added", function(snapshot) {
-
-$scope.datosBase.push(snapshot.val());
-console.log("carga datos");
-});
-*/              
-
     </script>
 
   </body>
