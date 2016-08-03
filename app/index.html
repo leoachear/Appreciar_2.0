@@ -149,13 +149,13 @@
               }])
               .controller('PostearController',['$scope','FireService', function($scope,FireService){ 
 
-                console.log('Blanquea afuera');
+                //console.log('Blanquea afuera');
                 $scope.nombre_producto = "";
                 $scope.precio_producto = "";
                 $scope.nombre_zona = "";
 
                 var blanquear = function() {
-                  console.log('Entra en la funcion blanquear');
+                  //console.log('Entra en la funcion blanquear');
                   $scope.nombre_producto = "";
                   $scope.precio_producto = "";
                   $scope.nombre_zona = "";
@@ -170,7 +170,7 @@
                     };
 
                   if ($scope.nombre_zona != null && $scope.nombre_zona != ''){
-                    console.log('Entra al IF');
+                    //console.log('Entra al IF');
                     FireService.addZona(postObj,$scope.nombre_zona);
                   }
 
